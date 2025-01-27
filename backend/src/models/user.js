@@ -13,6 +13,14 @@ Users.init({
         primaryKey: true,
         autoIncrement: true,
     },
+    fname: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    lname: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
     email: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,

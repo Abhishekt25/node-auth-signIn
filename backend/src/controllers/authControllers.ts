@@ -6,7 +6,7 @@ const JWT_SECRET = 'your_jwt_secret';
 
 // Register
 export const register = async (req: any, res: any) => {
-    const { email, password } = req.body;
+    const {fname,lname, email, password } = req.body;
     // console.log('Request Body:', req.body); // Add this line
   
     try {
@@ -20,7 +20,7 @@ export const register = async (req: any, res: any) => {
       }
   
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await Users.create({ email, password: hashedPassword });
+      const user = await Users.create({ email, password: hashedPassword,fname, lname });
   
       res.status(201).render('login', { message: 'Registered successfully. Please log in.' });
     } catch (error) {

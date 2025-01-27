@@ -19,7 +19,7 @@ const user_1 = __importDefault(require("../models/user"));
 const JWT_SECRET = 'your_jwt_secret';
 // Register
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
+    const { fname, lname, email, password } = req.body;
     // console.log('Request Body:', req.body); // Add this line
     try {
         if (!email || !password) {
@@ -30,7 +30,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(400).render('register', { message: 'Email already exists.' });
         }
         const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
-        const user = yield user_1.default.create({ email, password: hashedPassword });
+        const user = yield user_1.default.create({ email, password: hashedPassword, fname, lname });
         res.status(201).render('login', { message: 'Registered successfully. Please log in.' });
     }
     catch (error) {
