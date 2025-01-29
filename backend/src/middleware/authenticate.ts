@@ -2,7 +2,7 @@ import Users from "../models/user";
 import jwt from "jsonwebtoken";
 import { CustomJwtPayload } from "../../types/env";
 
-const JWT_SECRET = 'your_jwt_secret';
+const JWT_SECRET = 'abt1234554321';
 
 const authenticate = async (req: any, res: any, next: any) => {
     const token = req.cookies.auth_token;

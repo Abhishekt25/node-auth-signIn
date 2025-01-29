@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
-function App() {
-  const [message, setMessage] = useState('');
-  useEffect(() => {
-    fetch('http://localhost:2507/')
-      .then(response => response.text())
-      .then(data => setMessage(data));
-  }, []);
+import React from "react";
+import { BrowserRouter as Router, Link } from "react-router-dom";
+import RoutesComponent from "./routes/routes";
 
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <h1>{message}</h1>
-    </div>
+    <Router>
+      <nav className="p-4 bg-gray-200">
+        <Link to="/" className="mr-4">Home</Link>
+        <Link to="/login" className="mr-4">Login</Link>
+        <Link to="/register">Register</Link>
+      </nav>
+      <RoutesComponent />
+    </Router>
   );
-}
+};
+
 export default App;

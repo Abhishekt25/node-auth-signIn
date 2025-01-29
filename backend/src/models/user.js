@@ -26,6 +26,16 @@ Users.init({
         allowNull: false,
         unique: true,
     },
+    resetToken: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+    },
+    resetTokenExpires: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+    },
     password: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
@@ -41,6 +51,6 @@ Users.init({
 }, {
     sequelize: db_1.default,
     tableName: 'users',
-    timestamps: true, // Automatic handling of `createdAt` and `updatedAt`
+    timestamps: true,
 });
 exports.default = Users;

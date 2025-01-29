@@ -4,7 +4,9 @@ import sequelize from "../config/db";
 class Users extends Model{
    public id!: number;
    public email!:string;
+   public resetToken!:string;
    public password!:string;
+   public resetTokenExpires!:string;
 
 }
 
@@ -28,6 +30,16 @@ Users.init(
             allowNull: false,
             unique: true,
         },
+        resetToken:{
+            type: DataTypes.STRING,
+            allowNull:true,
+            defaultValue: null
+        },
+        resetTokenExpires:{
+            type: DataTypes.STRING,
+            allowNull:true,
+            defaultValue: null
+        },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -39,13 +51,13 @@ Users.init(
         updatedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
-
         },
+
     },
     {
         sequelize,
         tableName: 'users',
-        timestamps: true, // Automatic handling of `createdAt` and `updatedAt`
+        timestamps: true, 
     }
 );
 

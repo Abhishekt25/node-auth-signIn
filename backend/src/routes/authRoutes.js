@@ -22,4 +22,12 @@ router.post('/login', authControllers_1.login);
 router.get('/dashboard', authenticate_1.default, authControllers_1.dashboard);
 //LogOut
 router.get('/logout', authControllers_1.logOut);
+//forgot password
+router.get('/forgot-password', (req, res) => {
+    res.render('forgot-password');
+});
+router.post('/forgot-password', authControllers_1.forgotPassword);
+//reset password route
+router.get('/reset-password/:token', authControllers_1.resetPasswordPage);
+router.post('/reset-password/:token', authControllers_1.resetPassword);
 exports.default = router;

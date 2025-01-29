@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, dashboard, logOut } from '../controllers/authControllers';  
+import { register, login, dashboard, logOut, forgotPassword,resetPasswordPage, resetPassword } from '../controllers/authControllers';  
 import authenticate from '../middleware/authenticate';
 
 const router = express.Router();
@@ -22,5 +22,15 @@ router.get('/dashboard', authenticate, dashboard);
 
 //LogOut
 router.get('/logout',logOut);
+
+//forgot password
+router.get('/forgot-password',(req, res) =>{
+  res.render('forgot-password');
+});
+router.post('/forgot-password',forgotPassword);
+
+//reset password route
+router.get('/reset-password/:token', resetPasswordPage);
+router.post('/reset-password/:token', resetPassword);
 
 export default router;

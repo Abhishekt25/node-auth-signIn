@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = __importDefault(require("../models/user"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const JWT_SECRET = 'your_jwt_secret';
+const JWT_SECRET = 'abt1234554321';
 const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.auth_token;
     if (!token) {
