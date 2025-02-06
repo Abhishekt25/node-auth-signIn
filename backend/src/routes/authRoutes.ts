@@ -1,36 +1,41 @@
 import express from 'express';
-import { register, login, dashboard, logOut, forgotPassword,resetPasswordPage, resetPassword } from '../controllers/authControllers';  
+import { signUp, signIn, dashboard, logOut, forgotPassword,resetPasswordPage, resetPassword } from '../controllers/authControllers';  
 import authenticate from '../middleware/authenticate';
+import { Router } from 'express';
 
-const router = express.Router();
+const router = Router();
+router.post('/signup', signUp);
+router.post('/signin', signIn);
 
-// Register route
-router.get('/register', (req, res) => {
-  res.render('register');
-});
-router.post('/register', register);
+// const router = express.Router();
 
-// Login route
-router.get('/login', (req, res) => {
-const message = req.query.message || null
-res.render('login', { message });
-});
-router.post('/login', login);
+// // Register route
+// router.get('/register', (req, res) => {
+//   res.render('register');
+// });
+// router.post('/register', register);
 
-// Dashboard route (protected route)
-router.get('/dashboard', authenticate, dashboard);
+// // Login route
+// router.get('/login', (req, res) => {
+// const message = req.query.message || null
+// res.render('login', { message });
+// });
+// router.post('/login', login);
 
-//LogOut
-router.get('/logout',logOut);
+// // Dashboard route (protected route)
+// router.get('/dashboard', authenticate, dashboard);
 
-//forgot password
-router.get('/forgot-password',(req, res) =>{
-  res.render('forgot-password');
-});
-router.post('/forgot-password',forgotPassword);
+// //LogOut
+// router.get('/logout',logOut);
 
-//reset password route
-router.get('/reset-password/:token', resetPasswordPage);
-router.post('/reset-password/:token', resetPassword);
+// //forgot password
+// router.get('/forgot-password',(req, res) =>{
+//   res.render('forgot-password');
+// });
+// router.post('/forgot-password',forgotPassword);
+
+// //reset password route
+// router.get('/reset-password/:token', resetPasswordPage);
+// router.post('/reset-password/:token', resetPassword);
 
 export default router;

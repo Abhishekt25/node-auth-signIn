@@ -12,7 +12,7 @@ const JWT_SECRET = 'abt1234554321';
 
 
 // Register
-export const register = async (req: any, res: any) => {
+export const signUp = async (req: any, res: any) => {
     const {fname,lname, email, password } = req.body;
     // console.log('Request Body:', req.body); // Add this line
   
@@ -39,7 +39,7 @@ export const register = async (req: any, res: any) => {
   
 
 // Login
-export const login = async (req: any, res: any) => {
+export const signIn = async (req: any, res: any) => {
   const { email, password } = req.body;
 
   try {
@@ -139,7 +139,7 @@ export const dashboard = (req:any, res:any) =>{
 //Reset password page
 
 export const resetPasswordPage = async (req: any, res: any) => {
-  const { token } = req.params; // Ensure the token is in the params
+  const { token } = req.params; 
   console.log("Reset Password Token:", token);
 
   // Check if token is valid
@@ -170,8 +170,8 @@ export const resetPassword = async (req: any, res: any) => {
 
     // Hash the new password and update the user record
     user.password = await bcrypt.hash(password, 10);
-    user.resetToken = ''; // Clear the reset token once used
-    user.resetTokenExpires = ''; // Clear the reset token expiration
+    user.resetToken = ''; 
+    user.resetTokenExpires = '';
 
     await user.save();
 
