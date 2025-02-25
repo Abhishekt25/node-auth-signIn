@@ -27,9 +27,9 @@ const SignUp: React.FC =() =>{
       try {
           const response = await axios.post<AuthResponse>(
               "http://localhost:2507/api/signup",
-              JSON.stringify(data), // Convert to JSON string
+              JSON.stringify(data), 
               {
-                  headers: { "Content-Type": "application/json" }, // Ensure JSON format
+                  headers: { "Content-Type": "application/json" },
                   withCredentials: true
               }
           );
