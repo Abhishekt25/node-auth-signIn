@@ -5,11 +5,15 @@ import axios from "axios";
 
 
 interface SignUpForm{
-    firstname: string;
-    lastname: string;
+    fname: string;
+    lname: string;
     email: string;
     password: string;
     confirmPassword:string;
+    payload:string;
+}
+interface AuthResponse {
+  token: string;
 }
 
 const SignUp: React.FC =() =>{
@@ -17,18 +21,27 @@ const SignUp: React.FC =() =>{
     const {register , handleSubmit , formState:{errors} } = useForm<SignUpForm>();  //watch
     const navigate =useNavigate();
 
-    const onSubmit= async (data: SignUpForm) =>{
-        try{
-
-            const response = await axios.post("http://localhost:5000/api/auth/signin", data);
-            localStorage.setItem("token",response.data.token);
-            navigate("/login");
-
-        }catch(error){
-            setErrorMessage("Registration failed, Try again");
-        }
-    }
-
+    const onSubmit = async (data: SignUpForm) => {
+      console.log("Submitting data:", data);
+  
+      try {
+          const response = await axios.post<AuthResponse>(
+              "http://localhost:2507/api/signup",
+              JSON.stringify(data), // Convert to JSON string
+              {
+                  headers: { "Content-Type": "application/json" }, // Ensure JSON format
+                  withCredentials: true
+              }
+          );
+          localStorage.setItem("token", response.data.token);
+          navigate("/signin");
+      } catch (error: any) {
+          console.error("Registration error:", error.response?.data || error.message);
+          setErrorMessage(error.response?.data?.message || "Registration failed. Try again.");
+      }
+  };
+  
+    
     return(
        <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-96 bg-white p-6 rounded-lg shadow-md">
@@ -38,14 +51,14 @@ const SignUp: React.FC =() =>{
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
           <div>
             <label className="block text-sm font-medium">First Name</label>
-            <input type="text" className="w-full p-2 border rounded mt-1" {...register("firstname", { required: "Name is required" })}/>
-            {errors.firstname && <p className="text-red-500">{errors.firstname.message}</p>}
+            <input type="text" className="w-full p-2 border rounded mt-1" {...register("fname", { required: "Name is required" })}/>
+            {errors.fname && <p className="text-red-500">{errors.fname.message}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium">Last Name</label>
-            <input type="text" className="w-full p-2 border rounded mt-1" {...register("lastname", { required: "Name is required" })}/>
-            {errors.lastname && <p className="text-red-500">{errors.lastname.message}</p>}
+            <input type="text" className="w-full p-2 border rounded mt-1" {...register("lname", { required: "Name is required" })}/>
+            {errors.lname && <p className="text-red-500">{errors.lname.message}</p>}
           </div>
 
           <div className="mt-3">

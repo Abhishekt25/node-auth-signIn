@@ -18,23 +18,23 @@ const JWT_SECRET = 'abt1234554321';
 const authenticate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.auth_token;
     if (!token) {
-        return res.redirect('/login');
+        return res.redirect('/signin');
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
         if (!decoded.userId) {
-            return res.redirect('/login');
+            return res.redirect('/signin');
         }
         const user = yield user_1.default.findOne({ where: { id: decoded.userId } });
         if (!user) {
-            return res.redirect('/login');
+            return res.redirect('/signin');
         }
         req.user = user;
         next();
     }
     catch (error) {
         console.error('Error Verifying token', error);
-        return res.redirect('/login');
+        return res.redirect('/signin');
     }
 });
 exports.default = authenticate;

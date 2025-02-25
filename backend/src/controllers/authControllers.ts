@@ -5,74 +5,80 @@ import crypto from 'crypto';
 import Users from '../models/user';
 import * as dotenv  from 'dotenv';
 const { Op } = require('sequelize');
+import express from 'express';
 
 dotenv.config();
+const app = express();
 
+app.use(express.json()); // Parse JSON request bodies
 const JWT_SECRET = 'abt1234554321'; 
 
 
 // Register
 export const signUp = async (req: any, res: any) => {
-    const {fname,lname, email, password } = req.body;
-    // console.log('Request Body:', req.body); // Add this line
+    const { fname, lname, email, password } = req.body;
   
     try {
-      if (!email || !password) {
-        return res.status(400).render('register', { message: 'Please provide both email and password.' });
-      }
-  
-      const existingUser = await Users.findOne({ where: { email } });
-      if (existingUser) {
-        return res.status(400).render('register', { message: 'Email already exists.' });
-      }
-  
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await Users.create({ email, password: hashedPassword,fname, lname });
-  
-      res.status(201).render('login', { message: 'Registered successfully. Please log in.' });
+        if (!email || !password || !fname || !lname) {
+            return res.status(400).json({ message: 'All fields are required.' });
+        }
+
+        const existingUser = await Users.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already exists.' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await Users.create({ email, password: hashedPassword, fname, lname });
+
+        // Respond with JSON only
+        res.status(201).json({ message: 'Registered successfully. Please log in.' });
+
     } catch (error) {
-      console.error('Error during registration:', error);
-      res.status(500).render('register', { message: 'Server error. Please try again later.' });
+        console.error('Error during registration:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
     }
-  };
+};
+
     
   
 
-// Login
+// signin
 export const signIn = async (req: any, res: any) => {
   const { email, password } = req.body;
 
   try {
+      const user = await Users.findOne({ where: { email } });
+      if (!user) {
+          return res.status(400).json({ message: 'Invalid credentials.' });
+      }
 
-    const user = await Users.findOne({ where: { email } });
-    if (!user) {
-      return res.status(400).render('login', { message: 'Invalid credentials.' });
-    }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+          return res.status(400).json({ message: 'Invalid credentials.' });
+      }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).render('login', { message: 'Invalid credentials.' });
-    }
+      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+      res.cookie('auth_token', token, { httpOnly: true, secure: true, sameSite: 'strict' });
 
- 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    res.cookie('auth_token', token, { httpOnly: true, secure: true, sameSite: 'strict' });
-    res.redirect('/dashboard');
-  } 
-  catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).render('login', { message: 'Server error. Please try again later.' });
+      // Respond with JSON and let frontend redirect
+      res.status(200).json({ message: 'SignIn successful.', token });
+
+  } catch (error) {
+      console.error('Error during signin:', error);
+      res.status(500).json({ message: 'Server error. Please try again later.' });
   }
 };
+
 
 //Dashboard
 
 export const dashboard = (req:any, res:any) =>{
   if(req.user){
-    res.render('dashboard',{user:req.user});
+    res.json({user:req.user});
   }
   else{
-    res.redirect('/login');
+    res.redirect('/signin');
   }
 }
 
@@ -84,7 +90,7 @@ export const dashboard = (req:any, res:any) =>{
     secure:true,
     sameSite:"strict",
   });
-  res.redirect("/login");
+  res.redirect("/signin");
  }
 
 
@@ -99,7 +105,7 @@ export const dashboard = (req:any, res:any) =>{
 
     if (!user) {
       message = 'Email not found';
-      return res.status(400).render('forgot-password', { message });
+      return res.status(400).json({ message });
     }
 
     const resetToken = crypto.randomBytes(20).toString('hex');
@@ -127,11 +133,11 @@ export const dashboard = (req:any, res:any) =>{
     });
 
     message = 'Reset link sent to your email';
-    res.render('forgot-password', { message });
+    res.json({ message });
 
   } catch (error) {
     console.error('Error in forgot password', error);
-    res.status(500).render('forgot-password', { message: 'Server error. Please try again later.' });
+    res.status(500).json({ message: 'Server error. Please try again later.' });
   }
 };
 
@@ -144,11 +150,11 @@ export const resetPasswordPage = async (req: any, res: any) => {
 
   // Check if token is valid
   if (!token) {
-    return res.status(400).render('reset-password', { message: 'Invalid or expired token' });
+    return res.status(400).json({ message: 'Invalid or expired token' });
   }
 
   // Pass the token to the view
-  res.render('reset-password', { token, message: req.query.message || null });
+  res.json({ token, message: req.query.message || null });
 };
 
 export const resetPassword = async (req: any, res: any) => {
@@ -165,7 +171,7 @@ export const resetPassword = async (req: any, res: any) => {
     });
 
     if (!user) {
-      return res.status(400).render('reset-password', { message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
     // Hash the new password and update the user record
@@ -175,9 +181,9 @@ export const resetPassword = async (req: any, res: any) => {
 
     await user.save();
 
-    res.redirect('/login?message=Password reset successful. Please log in');
+    res.redirect('/signin?message=Password reset successful. Please log in');
   } catch (error) {
     console.error('Error in reset password', error);
-    res.status(500).render('reset-password', { message: 'Server error. Please try again later' });
+    res.status(500).json({ message: 'Server error. Please try again later' });
   }
 };
